@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>給食残食算出アプリ</title>
+    <style>
+        body { font-family: sans-serif; background-color: #f4f7f6; padding: 20px; color: #333; }
+        .app { max-width: 500px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        h1 { font-size: 1.4rem; font-weight: 500; color: #2c3e50; margin-bottom: 25px; border-left: 5px solid #007bff; padding-left: 10px; }
+        .section { margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        label { display: block; font-size: 0.9rem; font-weight: bold; margin-bottom: 8px; color: #555; }
+        input[type="tel"] {
+            width: 100%; padding: 12px; margin-bottom: 15px;
+            border: 2px solid #ddd; border-radius: 8px; box-sizing: border-box;
+            font-size: 1.2rem; outline: none; transition: border-color 0.3s;
+            -moz-appearance: textfield;
+        }
+        input[type="tel"]::-webkit-outer-spin-button,
+        input[type="tel"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type="tel"]:focus { border-color: #007bff; background-color: #fff; box-shadow: 0 0 5px rgba(0,123,255,0.1); }
+        .result-box { background-color: #e8f4fd; padding: 20px; border-radius: 8px; text-align: center; margin-top: 20px; border: 2px solid #007bff; }
+        .result-value { font-size: 3.5rem; font-weight: bold; color: #007bff; line-height: 1; margin: 10px 0; }
+        .warning { background-color: #f9ebeb; border-color: #d9534f; }
+        .warning .result-value { color: #d9534f; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    </style>
+</head>
+<body>
+
+<div class="app">
+    <h1>給食残食算出ツール</h1>
+
+    <div class="section">
+        <label>仕入れ総数（個）</label>
+        <input type="tel" id="totalStock" placeholder="0">
+        <div class="grid">
+            <div>
+                <label>生徒数（人）</label>
+                <input type="tel" id="studentCount" placeholder="0">
+            </div>
+            <div>
+                <label>配分（1人◯個）</label>
+                <input type="tel" id="perStudent" placeholder="0">
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <label>初期サンプル数（個）</label>
+        <input type="tel" id="initialSample" placeholder="0">
+        <div class="grid">
+            <div>
+                <label>調理回数（回）</label>
+                <input type="tel" id="batchCount" placeholder="0">
+            </div>
+            <div>
+                <label>各回サンプル（個）</label>
+                <input type="tel" id="samplePerBatch" placeholder="0">
+            </div>
+        </div>
+        <label>試し食い・検食（個）</label>
+        <input type="tel" id="tastingCount" placeholder="0">
+    </div>
+
+    <div class="section">
+        <div class="grid">
+            <div>
+                <label>配送学校数（校）</label>
+                <input type="tel" id="schoolCount" placeholder="0">
+            </div>
+            <div>
+                <label>1校のおまけ（個）</label>
+                <input type="tel" id="extraPerSchool" placeholder="0">
+            </div>
+        </div>
+    </div>
+
+    <div id="resultContainer" class="result-box">
+        <div style="font-weight: bold;">最終的なあまり</div>
+        <div id="result" class="result-value">0</div>
+        <div id="statusText">個</div>
+    </div>
+</div>
+
+<script>
+const inputs = document.querySelectorAll('input[type="tel"]');
+inputs.forEach(input => {
+    input.addEventListener('focus', function() {
+        this.value = '';
+        calculate();
+    });
+    input.addEventListener('input', calculate);
+});
+
+function calculate() {
+    const getVal = id => {
+        const v = document.getElementById(id).value;
+        return v === '' ? 0 : parseFloat(v) || 0;
+    };
+    const totalStock = getVal('totalStock');
+    const studentCount = getVal('studentCount');
+    const perStudent = getVal('perStudent');
+    const initialSample = getVal('initialSample');
+    const batchCount = getVal('batchCount');
+    const samplePerBatch = getVal('samplePerBatch');
+    const tastingCount = getVal('tastingCount');
+    const schoolCount = getVal('schoolCount');
+    const extraPerSchool = getVal('extraPerSchool');
+
+    const leftovers = totalStock
+        - (studentCount * perStudent)
+        - initialSample
+        - (batchCount * samplePerBatch)
+        - tastingCount
+        - (schoolCount * extraPerSchool);
+
+    document.getElementById('result').textContent = Math.round(leftovers);
+    const container = document.getElementById('resultContainer');
+    const statusText = document.getElementById('statusText');
+    if (leftovers < 0) {
+        container.classList.add('warning');
+        statusText.textContent = '個（不足しています！）';
+    } else {
+        container.classList.remove('warning');
+        statusText.textContent = '個';
+    }
+}
+</script>
+
+</body>
+</html>
