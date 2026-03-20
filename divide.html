@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>割り算計算機</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', 'Hiragino Sans', 'Yu Gothic', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 10px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 400px;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+        
+        .setup-section {
+            margin-bottom: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .setup-section.hidden {
+            display: none;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: bold;
+            font-size: 15px;
+        }
+        
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            font-size: 22px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            text-align: center;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        button {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+        
+        .calculator-section {
+            display: none;
+        }
+        
+        .calculator-section.active {
+            display: block;
+        }
+        
+        .divisor-display {
+            text-align: center;
+            padding: 12px;
+            background: #e9ecef;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            font-size: 16px;
+            color: #495057;
+        }
+        
+        .divisor-number {
+            font-size: 28px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .input-group {
+            margin-bottom: 12px;
+        }
+        
+        .result-section {
+            background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 12px;
+        }
+        
+        .result-label {
+            font-size: 14px;
+            color: #2c5282;
+            margin-bottom: 8px;
+        }
+        
+        .result-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #1a365d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 設定セクション -->
+        <div class="setup-section" id="setupSection">
+            <label for="divisorInput">釜数を設定してください (1-9):</label>
+            <input type="number" id="divisorInput" min="1" max="9" placeholder="1-9の数字" oninput="autoSetDivisor()">
+        </div>
+        
+        <!-- 計算セクション -->
+        <div class="calculator-section" id="calculatorSection">
+            <div class="divisor-display">
+                釜数: <span class="divisor-number" id="divisorDisplay"></span>
+            </div>
+            
+            <div class="result-section">
+                <div class="result-label">計算結果</div>
+                <div class="result-value" id="result">-</div>
+            </div>
+            
+            <div class="input-group">
+                <label for="dividendInput">割られる数を入力 (最大999.99):</label>
+                <input type="number" id="dividendInput" placeholder="数字を入力" step="0.01" min="0" max="999.99" oninput="validateAndCalculate()">
+            </div>
+            
+            <button class="btn-secondary" onclick="clearInput()">クリア</button>
+            <button class="btn-primary" onclick="resetDivisor()">釜数を変更</button>
+        </div>
+    </div>
+    
+    <script>
+        let divisor = null;
+        
+        function autoSetDivisor() {
+            const input = document.getElementById('divisorInput');
+            const value = parseInt(input.value);
+            
+            if (!isNaN(value) && value >= 1 && value <= 9) {
+                divisor = value;
+                document.getElementById('divisorDisplay').textContent = divisor;
+                document.getElementById('setupSection').classList.add('hidden');
+                document.getElementById('calculatorSection').classList.add('active');
+                document.getElementById('dividendInput').focus();
+            }
+        }
+        
+        function setDivisor() {
+            autoSetDivisor();
+        }
+        
+        function validateAndCalculate() {
+            const dividendInput = document.getElementById('dividendInput');
+            let dividend = parseFloat(dividendInput.value);
+            const resultDisplay = document.getElementById('result');
+            
+            if (isNaN(dividend) || dividendInput.value === '') {
+                resultDisplay.textContent = '-';
+                return;
+            }
+            
+            // 999.99を超える場合は999.99に制限
+            if (dividend > 999.99) {
+                dividend = 999.99;
+                dividendInput.value = 999.99;
+            }
+            
+            // 小数点第2位までに制限
+            dividend = Math.round(dividend * 100) / 100;
+            
+            const result = dividend / divisor;
+            resultDisplay.textContent = result.toFixed(4);
+        }
+        
+        function calculate() {
+            validateAndCalculate();
+        }
+        
+        function clearInput() {
+            document.getElementById('dividendInput').value = '';
+            document.getElementById('result').textContent = '-';
+            document.getElementById('dividendInput').focus();
+        }
+        
+        function resetDivisor() {
+            // 入力欄をリセット
+            document.getElementById('divisorInput').value = '';
+            document.getElementById('dividendInput').value = '';
+            document.getElementById('result').textContent = '-';
+            
+            // 画面を切り替え
+            document.getElementById('calculatorSection').classList.remove('active');
+            document.getElementById('setupSection').classList.remove('hidden');
+            
+            // 割る数入力欄にフォーカス
+            document.getElementById('divisorInput').focus();
+        }
+        
+        // Enterキーでの処理は不要になったので削除
+    </script>
+</body>
+</html>
