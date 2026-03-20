@@ -11,6 +11,7 @@
       --card-bg: #fff;
       --accent-orange: #e8732a;
       --accent-green: #4a9e6b;
+      --accent-blue: #3a7ec4;
       --text-dark: #2b2416;
       --text-mid: #5a5040;
       --text-light: #9a8e7a;
@@ -115,6 +116,7 @@
 
     .card:nth-child(1) { animation-delay: 0.15s; }
     .card:nth-child(2) { animation-delay: 0.28s; }
+    .card:nth-child(3) { animation-delay: 0.41s; }
 
     .card:hover {
       transform: translateY(-4px) scale(1.01);
@@ -123,6 +125,7 @@
 
     .card.orange:hover { border-color: var(--accent-orange); }
     .card.green:hover  { border-color: var(--accent-green); }
+    .card.blue:hover   { border-color: var(--accent-blue); }
 
     .card-icon {
       width: 68px; height: 68px;
@@ -137,6 +140,7 @@
     }
     .card.orange .card-icon { background: #fff3ea; }
     .card.green  .card-icon { background: #edf7f1; }
+    .card.blue   .card-icon { background: #e8f2fc; }
 
     .card-body { flex: 1; }
 
@@ -149,6 +153,7 @@
     }
     .card.orange .card-label { color: var(--accent-orange); }
     .card.green  .card-label { color: var(--accent-green); }
+    .card.blue   .card-label { color: var(--accent-blue); }
 
     .card-title {
       font-family: 'Zen Kaku Gothic New', sans-serif;
@@ -172,6 +177,7 @@
     }
     .card.orange:hover .card-arrow { color: var(--accent-orange); transform: translateX(4px); }
     .card.green:hover  .card-arrow { color: var(--accent-green);  transform: translateX(4px); }
+    .card.blue:hover   .card-arrow { color: var(--accent-blue);   transform: translateX(4px); }
 
     /* フッター */
     .footer {
@@ -218,7 +224,7 @@
         <div class="card-icon">➗</div>
         <div class="card-body">
           <div class="card-label">divide</div>
-          <div class="card-title">食数割り当て計算</div>
+          <div class="card-title">釜数での割り算</div>
           <div class="card-desc">クラスごとの食数を割り振る計算ツール</div>
         </div>
         <div class="card-arrow">→</div>
@@ -228,8 +234,18 @@
         <div class="card-icon">📊</div>
         <div class="card-body">
           <div class="card-label">percentage</div>
-          <div class="card-title">残食率計算</div>
+          <div class="card-title">和え物計算</div>
           <div class="card-desc">残食量から残食率をすばやく算出するツール</div>
+        </div>
+        <div class="card-arrow">→</div>
+      </a>
+
+      <a class="card blue" href="leaves.html">
+        <div class="card-icon">🥬</div>
+        <div class="card-body">
+          <div class="card-label">leaves</div>
+          <div class="card-title">余りの計算</div>
+          <div class="card-desc">葉物野菜の使用量・発注量を計算するツール</div>
         </div>
         <div class="card-arrow">→</div>
       </a>
